@@ -1,6 +1,8 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware, { protect, adminOnly } from "../middleware/authMiddleware.js";
 import authorizeRoles from "../middleware/roleMiddleware.js";
+import validate from "../middleware/validate.js";
+import { vehicleSchema } from "../validators/vehicleValidator.js";
 
 import {
   createVehicle,
@@ -17,10 +19,11 @@ const router = express.Router();
 // Only Admin & Manager
 // ==========================
 router.post(
-  "/",
-  authMiddleware,
-  authorizeRoles("admin", "manager"),
-  createVehicle
+    "/",
+    protect,
+    adminOnly,
+    validate(vehicleSchema),
+    createVehicle
 );
 
 // ==========================

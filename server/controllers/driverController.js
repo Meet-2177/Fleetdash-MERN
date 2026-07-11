@@ -1,224 +1,145 @@
 import Driver from "../models/Driver.js";
 import Vehicle from "../models/Vehicle.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
-// =======================================
-// Add Driver
-// =======================================
-export const createDriver = async (req, res) => {
-  try {
-    const {
-      name,
-      email,
-      phone,
-      licenseNumber,
-      experience,
-      address,
-      status,
-      assignedVehicle,
-    } = req.body;
+// ==========================
+// Create Driver
+// ==========================
+export const createDriver = asyncHandler(async (req, res) => {
+  const existingDriver = await Driver.findOne({
+    email: req.body.email,
+  });
 
-    // Check if driver already exists
-    const existingDriver = await Driver.findOne({
-      $or: [
-        { email },
-        { phone },
-        { licenseNumber }
-      ]
-    });
-
-    if (existingDriver) {
-      return res.status(400).json({
-        success: false,
-        message: "Driver already exists",
-      });
-    }
-
-    const driver = await Driver.create({
-      name,
-      email,
-      phone,
-      licenseNumber,
-      experience,
-      address,
-      status,
-      assignedVehicle,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Driver Added Successfully",
-      driver,
-    });
-
-  } catch (error) {
-    res.status(500).json({
+  if (existingDriver) {
+    return res.status(400).json({
       success: false,
-      message: error.message,
+      message: "Driver already exists",
     });
   }
-};
 
-// =======================================
+  const driver = await Driver.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    message: "Driver Added Successfully",
+    driver,
+  });
+});
+
+// ==========================
 // Get All Drivers
-// =======================================
-export const getDrivers = async (req, res) => {
-  try {
+// ==========================
+export const getDrivers = asyncHandler(async (req, res) => {
+  const drivers = await Driver.find().populate(
+    "assignedVehicle",
+    "vehicleNumber brand model status"
+  );
 
-    const drivers = await Driver.find()
-      .populate("assignedVehicle");
+  res.status(200).json({
+    success: true,
+    count: drivers.length,
+    drivers,
+  });
+});
 
-    res.status(200).json({
-      success: true,
-      count: drivers.length,
-      drivers,
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// =======================================
+// ==========================
 // Get Driver By ID
-// =======================================
-export const getDriverById = async (req, res) => {
-  try {
+// ==========================
+export const getDriverById = asyncHandler(async (req, res) => {
+  const driver = await Driver.findById(req.params.id).populate(
+    "assignedVehicle",
+    "vehicleNumber brand model status"
+  );
 
-    const driver = await Driver.findById(req.params.id)
-      .populate("assignedVehicle");
-
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: "Driver not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      driver,
-    });
-
-  } catch (error) {
-    res.status(500).json({
+  if (!driver) {
+    return res.status(404).json({
       success: false,
-      message: error.message,
+      message: "Driver not found",
     });
   }
-};
 
-// =======================================
+  res.status(200).json({
+    success: true,
+    driver,
+  });
+});
+
+// ==========================
 // Update Driver
-// =======================================
-export const updateDriver = async (req, res) => {
-  try {
-
-    const driver = await Driver.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    ).populate("assignedVehicle");
-
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: "Driver not found",
-      });
+// ==========================
+export const updateDriver = asyncHandler(async (req, res) => {
+  const driver = await Driver.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
     }
+  );
 
-    res.status(200).json({
-      success: true,
-      message: "Driver Updated Successfully",
-      driver,
-    });
-
-  } catch (error) {
-    res.status(500).json({
+  if (!driver) {
+    return res.status(404).json({
       success: false,
-      message: error.message,
+      message: "Driver not found",
     });
   }
-};
 
-// =======================================
-// Assign Vehicle to Driver
-// =======================================
+  res.status(200).json({
+    success: true,
+    message: "Driver Updated Successfully",
+    driver,
+  });
+});
 
-export const assignVehicle = async (req, res) => {
-  try {
-    const { vehicleId } = req.body;
-
-    // Check if vehicle exists
-    const vehicle = await Vehicle.findById(vehicleId);
-
-    if (!vehicle) {
-      return res.status(404).json({
-        success: false,
-        message: "Vehicle not found",
-      });
-    }
-
-    // Check if driver exists
-    const driver = await Driver.findById(req.params.id);
-
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: "Driver not found",
-      });
-    }
-
-    driver.assignedVehicle = vehicleId;
-
-    await driver.save();
-
-    const updatedDriver = await Driver.findById(driver._id)
-      .populate("assignedVehicle");
-
-    res.status(200).json({
-      success: true,
-      message: "Vehicle Assigned Successfully",
-      driver: updatedDriver,
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// =======================================
+// ==========================
 // Delete Driver
-// =======================================
-export const deleteDriver = async (req, res) => {
-  try {
+// ==========================
+export const deleteDriver = asyncHandler(async (req, res) => {
+  const driver = await Driver.findByIdAndDelete(req.params.id);
 
-    const driver = await Driver.findByIdAndDelete(req.params.id);
-
-    if (!driver) {
-      return res.status(404).json({
-        success: false,
-        message: "Driver not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Driver Deleted Successfully",
-    });
-
-  } catch (error) {
-    res.status(500).json({
+  if (!driver) {
+    return res.status(404).json({
       success: false,
-      message: error.message,
+      message: "Driver not found",
     });
   }
-};
+
+  res.status(200).json({
+    success: true,
+    message: "Driver Deleted Successfully",
+  });
+});
+
+// ==========================
+// Assign Vehicle to Driver
+// ==========================
+export const assignVehicle = asyncHandler(async (req, res) => {
+  const { vehicleId } = req.body;
+
+  const driver = await Driver.findById(req.params.id);
+
+  if (!driver) {
+    return res.status(404).json({
+      success: false,
+      message: "Driver not found",
+    });
+  }
+
+  const vehicle = await Vehicle.findById(vehicleId);
+
+  if (!vehicle) {
+    return res.status(404).json({
+      success: false,
+      message: "Vehicle not found",
+    });
+  }
+
+  driver.assignedVehicle = vehicle._id;
+  await driver.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Vehicle Assigned Successfully",
+    driver,
+  });
+});
