@@ -2,6 +2,7 @@ import Trip from "../models/Trip.js";
 import Driver from "../models/Driver.js";
 import Vehicle from "../models/Vehicle.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import Notification from "../models/Notification.js";
 
 // ==========================
 // Create Trip
@@ -70,6 +71,16 @@ export const createTrip = asyncHandler(async (req, res) => {
 
   vehicleData.status = "On Trip";
   await vehicleData.save();
+
+  // ==========================
+  // Create Notification
+  // ==========================
+  await Notification.create({
+    title: "New Trip Created",
+    message: `Trip from ${trip.source} to ${trip.destination} has been created.`,
+    type: "Trip",
+    createdFor: req.user.id,
+  });
 
   res.status(201).json({
     success: true,
@@ -156,6 +167,16 @@ export const updateTrip = asyncHandler(async (req, res) => {
   }
 
   await trip.save();
+
+  // Create notification when trip is completed
+  if (trip.status === "Completed") {
+    await Notification.create({
+      title: "Trip Completed",
+      message: `Trip from ${trip.source} to ${trip.destination} has been completed successfully.`,
+      type: "Trip",
+      createdFor: req.user.id,
+    });
+  }
 
   res.status(200).json({
     success: true,

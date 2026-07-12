@@ -44,6 +44,16 @@ const driverSchema = new mongoose.Schema(
       default: "Available",
     },
 
+    photo: {
+      type: String,
+      default: "",
+    },
+
+    licenseImage: {
+      type: String,
+      default: "",
+    },
+
     assignedVehicle: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vehicle",

@@ -1,6 +1,7 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import authorizeRoles from "../middleware/roleMiddleware.js";
+import upload from "../middleware/upload.js";
 
 import {
   createDriver,
@@ -9,6 +10,7 @@ import {
   updateDriver,
   deleteDriver,
   assignVehicle,
+  uploadDriverPhoto,
 } from "../controllers/driverController.js";
 
 const router = express.Router();
@@ -70,6 +72,16 @@ router.delete(
   authMiddleware,
   authorizeRoles("admin"),
   deleteDriver
+);
+
+// ======================================
+// Upload Driver Photo
+// ======================================
+router.put(
+  "/:id/upload-photo",
+  authMiddleware,
+  upload.single("photo"),
+  uploadDriverPhoto
 );
 
 export default router;

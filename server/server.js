@@ -15,6 +15,15 @@ import errorHandler from "./middleware/errorMiddleware.js";
 import fuelRoutes from "./routes/fuelRoutes.js";
 
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
+import helmet from "helmet";
+
+import apiLimiter from "./middleware/rateLimiter.js";
+import morgan from "morgan";
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +36,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(helmet());
+app.use(apiLimiter);
+app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -36,7 +48,9 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/fuel", fuelRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
-app.use(errorHandler);
+app.use("/api/reports", reportRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Test Route
 app.get("/", (req, res) => {
@@ -45,6 +59,8 @@ app.get("/", (req, res) => {
     message: "🚀 FleetDash Backend API is Running Successfully",
   });
 });
+
+app.use(errorHandler);
 
 // Server Port
 const PORT = process.env.PORT || 5000;

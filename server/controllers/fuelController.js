@@ -1,6 +1,7 @@
 import Fuel from "../models/Fuel.js";
 import Vehicle from "../models/Vehicle.js";
 import Driver from "../models/Driver.js";
+import Notification from "../models/Notification.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 // ==========================
@@ -16,6 +17,7 @@ export const addFuel = asyncHandler(async (req, res) => {
     fuelStation,
   } = req.body;
 
+  // Check Vehicle
   const vehicleExists = await Vehicle.findById(vehicle);
 
   if (!vehicleExists) {
@@ -25,6 +27,7 @@ export const addFuel = asyncHandler(async (req, res) => {
     });
   }
 
+  // Check Driver
   const driverExists = await Driver.findById(driver);
 
   if (!driverExists) {
@@ -34,8 +37,10 @@ export const addFuel = asyncHandler(async (req, res) => {
     });
   }
 
+  // Calculate Total Cost
   const totalCost = liters * pricePerLiter;
 
+  // Create Fuel Entry
   const fuel = await Fuel.create({
     vehicle,
     driver,
@@ -44,6 +49,16 @@ export const addFuel = asyncHandler(async (req, res) => {
     totalCost,
     odometer,
     fuelStation,
+  });
+
+  // ==========================
+  // Create Notification
+  // ==========================
+  await Notification.create({
+    title: "Fuel Added",
+    message: `${liters} liters of fuel added to vehicle ${vehicleExists.vehicleNumber}.`,
+    type: "Fuel",
+    createdFor: req.user.id,
   });
 
   res.status(201).json({
@@ -59,7 +74,8 @@ export const addFuel = asyncHandler(async (req, res) => {
 export const getFuelEntries = asyncHandler(async (req, res) => {
   const fuels = await Fuel.find()
     .populate("vehicle", "vehicleNumber brand")
-    .populate("driver", "name");
+    .populate("driver", "name")
+    .sort({ createdAt: -1 });
 
   res.status(200).json({
     success: true,

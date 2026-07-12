@@ -143,3 +143,40 @@ export const assignVehicle = asyncHandler(async (req, res) => {
     driver,
   });
 });
+
+// ==========================
+// Upload Driver Photo
+// ==========================
+export const uploadDriverPhoto = asyncHandler(async (req, res) => {
+
+    console.log("Controller reached");
+    console.log("FILE:", req.file);
+    console.log("BODY:", req.body);
+
+    const driver = await Driver.findById(req.params.id);
+
+    if (!driver) {
+        return res.status(404).json({
+            success: false,
+            message: "Driver not found",
+        });
+    }
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: "No image uploaded",
+        });
+    }
+
+    driver.photo = req.file.path;
+
+    await driver.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Driver photo uploaded successfully",
+        photo: driver.photo,
+    });
+
+});
