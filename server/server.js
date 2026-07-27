@@ -28,44 +28,48 @@ import morgan from "morgan";
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(helmet());
-app.use(apiLimiter);
-app.use(morgan("dev"));
+// Connect to MongoDB
+const startServer = async () => {
+  await connectDB();
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/vehicles", vehicleRoutes);
-app.use("/api/drivers", driverRoutes);
-app.use("/api/trips", tripRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/fuel", fuelRoutes);
-app.use("/api/maintenance", maintenanceRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // Middleware
+  app.use(cors());
+  app.use(express.json());
+  app.use(helmet());
+  app.use(apiLimiter);
+  app.use(morgan("dev"));
 
-// Test Route
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "🚀 FleetDash Backend API is Running Successfully",
+  app.use("/api/auth", authRoutes);
+  app.use("/api/users", userRoutes);
+  app.use("/api/vehicles", vehicleRoutes);
+  app.use("/api/drivers", driverRoutes);
+  app.use("/api/trips", tripRoutes);
+  app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/fuel", fuelRoutes);
+  app.use("/api/maintenance", maintenanceRoutes);
+  app.use("/api/reports", reportRoutes);
+  app.use("/api/notifications", notificationRoutes);
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+  // Test Route
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "🚀 FleetDash Backend API is Running Successfully",
+    });
   });
-});
 
-app.use(errorHandler);
+  app.use(errorHandler);
 
-// Server Port
-const PORT = process.env.PORT || 5000;
+  // Server Port
+  const PORT = process.env.PORT || 5000;
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+  // Start Server
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+  });
+};
+
+startServer();
