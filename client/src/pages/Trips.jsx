@@ -125,12 +125,23 @@ const Trips = () => {
     }
   };
 
+  const openDelete = (trip) => {
+    setSelected(trip);
+    setDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setDeleteOpen(false);
+    setSelected(null);
+  };
+
   const handleDelete = async () => {
+    if (!selected?._id) return;
     setSubmitting(true);
     try {
       await deleteTrip(selected._id);
       toast.success("Trip deleted");
-      setDeleteOpen(false);
+      closeDelete();
       fetchData();
     } catch (err) {
       toast.error(err.message);
@@ -184,16 +195,18 @@ const Trips = () => {
                     <TableCell>{formatDateTime(t.startTime)}</TableCell>
                     <TableCell><StatusBadge status={t.status} /></TableCell>
                     <TableCell align="right">
-                      {canEdit && (
-                        <IconButton size="small" onClick={() => openEdit(t)} color="primary">
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                      {canDelete && (
-                        <IconButton size="small" color="error" onClick={() => { setSelected(t); setDeleteOpen(true); }}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                        {canEdit && (
+                          <IconButton size="small" onClick={() => openEdit(t)} color="primary">
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {canDelete && (
+                          <IconButton size="small" color="error" onClick={() => openDelete(t)}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -249,7 +262,7 @@ const Trips = () => {
         title="Delete Trip"
         message="Are you sure you want to delete this trip?"
         onConfirm={handleDelete}
-        onCancel={() => setDeleteOpen(false)}
+        onCancel={closeDelete}
         loading={submitting}
       />
     </Box>

@@ -156,12 +156,23 @@ const Drivers = () => {
     }
   };
 
+  const openDelete = (driver) => {
+    setSelected(driver);
+    setDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setDeleteOpen(false);
+    setSelected(null);
+  };
+
   const handleDelete = async () => {
+    if (!selected?._id) return;
     setSubmitting(true);
     try {
       await deleteDriver(selected._id);
       toast.success("Driver deleted");
-      setDeleteOpen(false);
+      closeDelete();
       fetchData();
     } catch (err) {
       toast.error(err.message);
@@ -223,21 +234,23 @@ const Drivers = () => {
                     <TableCell>{d.assignedVehicle?.vehicleNumber || "—"}</TableCell>
                     <TableCell><StatusBadge status={d.status} /></TableCell>
                     <TableCell align="right">
-                      {canEdit && (
-                        <>
-                          <IconButton size="small" onClick={() => openEdit(d)} color="primary">
-                            <EditIcon fontSize="small" />
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                        {canEdit && (
+                          <>
+                            <IconButton size="small" onClick={() => openEdit(d)} color="primary">
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton size="small" color="info" onClick={() => { setSelected(d); setVehicleId(d.assignedVehicle?._id || ""); setAssignOpen(true); }}>
+                              <LinkIcon fontSize="small" />
+                            </IconButton>
+                          </>
+                        )}
+                        {canDelete && (
+                          <IconButton size="small" color="error" onClick={() => openDelete(d)}>
+                            <DeleteIcon fontSize="small" />
                           </IconButton>
-                          <IconButton size="small" color="info" onClick={() => { setSelected(d); setVehicleId(d.assignedVehicle?._id || ""); setAssignOpen(true); }}>
-                            <LinkIcon fontSize="small" />
-                          </IconButton>
-                        </>
-                      )}
-                      {canDelete && (
-                        <IconButton size="small" color="error" onClick={() => { setSelected(d); setDeleteOpen(true); }}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -324,7 +337,7 @@ const Drivers = () => {
         title="Delete Driver"
         message={`Delete driver ${selected?.name}?`}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteOpen(false)}
+        onCancel={closeDelete}
         loading={submitting}
       />
     </Box>

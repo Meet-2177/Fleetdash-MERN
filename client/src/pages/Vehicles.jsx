@@ -131,12 +131,23 @@ const Vehicles = () => {
     }
   };
 
+  const openDelete = (vehicle) => {
+    setSelected(vehicle);
+    setDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setDeleteOpen(false);
+    setSelected(null);
+  };
+
   const handleDelete = async () => {
+    if (!selected?._id) return;
     setSubmitting(true);
     try {
       await deleteVehicle(selected._id);
       toast.success("Vehicle deleted");
-      setDeleteOpen(false);
+      closeDelete();
       fetchVehicles();
     } catch (err) {
       toast.error(err.message);
@@ -203,16 +214,18 @@ const Vehicles = () => {
                     <TableCell>{v.capacity}</TableCell>
                     <TableCell><StatusBadge status={v.status} /></TableCell>
                     <TableCell align="right">
-                      {canEdit && (
-                        <IconButton size="small" onClick={() => openEdit(v)} color="primary">
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                      {canDelete && (
-                        <IconButton size="small" color="error" onClick={() => { setSelected(v); setDeleteOpen(true); }}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                        {canEdit && (
+                          <IconButton size="small" onClick={() => openEdit(v)} color="primary">
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {canDelete && (
+                          <IconButton size="small" color="error" onClick={() => openDelete(v)}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -283,7 +296,7 @@ const Vehicles = () => {
         title="Delete Vehicle"
         message={`Delete vehicle ${selected?.vehicleNumber}?`}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteOpen(false)}
+        onCancel={closeDelete}
         loading={submitting}
       />
     </Box>
