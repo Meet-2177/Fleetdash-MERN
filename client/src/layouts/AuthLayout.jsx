@@ -11,7 +11,7 @@ const AuthLayout = () => (
       justifyContent: "center",
       position: "relative",
       overflow: "hidden",
-      background: "linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #42A5F5 100%)",
+      background: "linear-gradient(135deg, #0f172a 0%, #312e81 45%, #4f46e5 100%)",
       p: 2,
     }}
   >
@@ -19,24 +19,26 @@ const AuthLayout = () => (
       sx={{
         position: "absolute",
         inset: 0,
-        background: "radial-gradient(circle at top right, rgba(255,255,255,0.18) 0%, transparent 35%)",
+        background: "radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 36%)",
       }}
     />
     <Box
       sx={{
         position: "absolute",
-        width: 260,
-        height: 260,
+        width: 280,
+        height: 280,
         borderRadius: "50%",
         background: "rgba(255,255,255,0.12)",
-        bottom: -80,
-        left: -60,
+        bottom: -100,
+        left: -90,
         filter: "blur(4px)",
       }}
     />
     <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1 }}>
       <Box sx={{ textAlign: "center", mb: 3 }}>
-        <DirectionsCarFilledIcon sx={{ fontSize: 48, color: "#fff", mb: 1 }} />
+        <Box sx={{ display: "inline-flex", p: 1.4, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.16)", mb: 1.5 }}>
+          <DirectionsCarFilledIcon sx={{ fontSize: 40, color: "#fff" }} />
+        </Box>
         <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700 }}>
           FleetDash
         </Typography>
@@ -44,7 +46,7 @@ const AuthLayout = () => (
           Enterprise Fleet Management System
         </Typography>
       </Box>
-      <Paper elevation={10} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 4, boxShadow: "0 16px 40px rgba(0, 0, 0, 0.16)" }}>
+      <Paper elevation={0} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 4, boxShadow: "0 24px 60px rgba(2, 6, 23, 0.24)", border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.96)" }}>
         <Outlet />
       </Paper>
     </Container>

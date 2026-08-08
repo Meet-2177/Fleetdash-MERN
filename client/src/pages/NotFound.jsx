@@ -15,18 +15,32 @@ const NotFound = () => {
         justifyContent: "center",
         textAlign: "center",
         p: 3,
+        background: "linear-gradient(135deg, #f7f9ff 0%, #eef4ff 100%)",
       }}
     >
-      <ErrorOutlineOutlinedIcon sx={{ fontSize: 80, color: "primary.main", mb: 2 }} />
-      <Typography variant="h3" fontWeight={700}>
-        404
-      </Typography>
-      <Typography variant="h6" color="text.secondary" mb={3}>
-        Page not found
-      </Typography>
-      <Button variant="contained" startIcon={<HomeIcon />} onClick={() => navigate("/dashboard")}>
-        Go to Dashboard
-      </Button>
+      <Box
+        sx={{
+          p: 4,
+          borderRadius: 4,
+          bgcolor: "background.paper",
+          boxShadow: "0 20px 45px rgba(15, 23, 42, 0.08)",
+          border: "1px solid",
+          borderColor: "divider",
+          maxWidth: 480,
+          width: "100%",
+        }}
+      >
+        <ErrorOutlineOutlinedIcon sx={{ fontSize: 80, color: "primary.main", mb: 2 }} />
+        <Typography variant="h3" fontWeight={700}>
+          404
+        </Typography>
+        <Typography variant="h6" color="text.secondary" mb={3}>
+          Page not found
+        </Typography>
+        <Button variant="contained" startIcon={<HomeIcon />} onClick={() => navigate("/dashboard")}>
+          Go to Dashboard
+        </Button>
+      </Box>
     </Box>
   );
 };

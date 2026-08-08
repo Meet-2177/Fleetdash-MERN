@@ -11,9 +11,13 @@ const StatCard = ({ title, value, icon: Icon, color = "#1565C0", loading }) => {
         position: "relative",
         overflow: "hidden",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        background: "linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,249,255,0.96) 100%)",
+        border: "1px solid",
+        borderColor: "divider",
+        boxShadow: "0 12px 28px rgba(15, 23, 42, 0.05)",
         "&:hover": {
           transform: "translateY(-2px)",
-          boxShadow: "0 16px 32px rgba(15, 23, 42, 0.12)",
+          boxShadow: "0 18px 36px rgba(15, 23, 42, 0.12)",
         },
       }}
     >

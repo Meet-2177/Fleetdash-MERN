@@ -18,7 +18,7 @@ const connectDB = async () => {
   } catch (error) {
     console.error("⚠️ MongoDB Connection Failed:", error.message);
     console.warn(
-      "⚠️ Continuing without MongoDB for now. API routes that require the database will remain unavailable until a connection is established."
+      "⚠️ Continuing without MongoDB for now. Authentication will use a development fallback until a connection is established."
     );
     return false;
   }

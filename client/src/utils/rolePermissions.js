@@ -61,4 +61,10 @@ export const navItems = [
   { label: "Reports", path: "/reports", icon: "Assessment", roles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.DRIVER] },
   { label: "Notifications", path: "/notifications", icon: "Notifications", roles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.DRIVER] },
   { label: "Users", path: "/users", icon: "ManageAccounts", roles: [ROLES.ADMIN] },
+  {
+    label: "Live Map",
+    path: "/live-map",
+    icon: "Map",
+    roles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.DRIVER],
+  },
 ];

@@ -48,18 +48,23 @@ const Navbar = ({ drawerWidth, onMenuClick }) => {
     <AppBar
       position="fixed"
       color="inherit"
+      elevation={0}
       sx={{
         width: { md: `calc(100% - ${drawerWidth}px)` },
         ml: { md: `${drawerWidth}px` },
-        bgcolor: "background.paper",
+        bgcolor: "rgba(255,255,255,0.88)",
+        backdropFilter: "blur(16px)",
+        borderBottom: "1px solid",
+        borderColor: "divider",
+        boxShadow: "0 8px 30px rgba(15, 23, 42, 0.06)",
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ px: { xs: 2, sm: 3 }, py: 0.6 }}>
         <IconButton
-          color="inherit"
+          color="primary"
           edge="start"
           onClick={onMenuClick}
-          sx={{ mr: 2, display: { md: "none" } }}
+          sx={{ mr: 2, display: { md: "none" }, border: "1px solid", borderColor: "divider" }}
         >
           <MenuIcon />
         </IconButton>
@@ -68,21 +73,23 @@ const Navbar = ({ drawerWidth, onMenuClick }) => {
           <Typography variant="body2" color="text.secondary">
             Welcome back,
           </Typography>
-          <Typography variant="subtitle1" fontWeight={600}>
+          <Typography variant="subtitle1" fontWeight={700} color="text.primary">
             {user?.name}
           </Typography>
         </Box>
 
-        <IconButton color="primary" onClick={() => navigate("/notifications")}>
+        <IconButton
+          color="primary"
+          onClick={() => navigate("/notifications")}
+          sx={{ mr: 1, border: "1px solid", borderColor: "divider" }}
+        >
           <Badge badgeContent={unreadCount} color="error">
             <NotificationsNoneIcon />
           </Badge>
         </IconButton>
 
-        <IconButton onClick={handleMenuOpen} sx={{ ml: 1 }}>
-          <Avatar
-            sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: 14 }}
-          >
+        <IconButton onClick={handleMenuOpen} sx={{ border: "1px solid", borderColor: "divider", p: 0.6 }}>
+          <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: 14 }}>
             {user?.name?.charAt(0)?.toUpperCase()}
           </Avatar>
         </IconButton>

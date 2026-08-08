@@ -67,6 +67,15 @@ const Reports = () => {
     completed: r.completedTrips,
   }));
 
+  const panelSx = {
+    height: "100%",
+    borderRadius: 4,
+    background: "linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(245,249,255,0.96) 100%)",
+    border: "1px solid",
+    borderColor: "divider",
+    boxShadow: "0 16px 38px rgba(15, 23, 42, 0.06)",
+  };
+
   return (
     <Box>
       <PageHeader
@@ -74,7 +83,7 @@ const Reports = () => {
         subtitle="Fleet performance insights"
       />
 
-      <Grid container spacing={3} mb={3}>
+      <Grid container spacing={2.5} mb={3}>
         <Grid item xs={12} sm={6} md={4} lg={2}>
           <StatCard title="Vehicles" value={dashboard?.totalVehicles || 0} icon={DirectionsCarIcon} />
         </Grid>
@@ -97,10 +106,10 @@ const Reports = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} lg={6}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h6" fontWeight={600}>
+          <Card sx={{ ...panelSx }}>
+            <CardContent sx={{ py: 3 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+                <Typography variant="h6" fontWeight={700}>
                   Fuel Analysis by Vehicle
                 </Typography>
                 <Box sx={{ px: 1.2, py: 0.6, borderRadius: 999, bgcolor: "secondary.main", color: "secondary.contrastText", fontSize: 12, fontWeight: 600 }}>
@@ -126,9 +135,9 @@ const Reports = () => {
           </Card>
         </Grid>
         <Grid item xs={12} lg={6}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent>
-              <Typography variant="h6" fontWeight={600} mb={2}>
+          <Card sx={{ ...panelSx }}>
+            <CardContent sx={{ py: 3 }}>
+              <Typography variant="h6" fontWeight={700} mb={2.5}>
                 Trip Analysis by Vehicle
               </Typography>
               {tripChartData.length === 0 ? (

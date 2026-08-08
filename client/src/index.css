@@ -16,14 +16,49 @@ body,
 
 body {
   font-family: "Inter", "Roboto", "Helvetica", "Arial", sans-serif;
-  background: linear-gradient(135deg, #f4f7fb 0%, #eef4ff 45%, #f7fbff 100%);
+  background: linear-gradient(135deg, #f5f3ff 0%, #eef8ff 48%, #f8fbff 100%);
+  color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(0px);
+}
+
+body::before {
+  top: -120px;
+  right: -100px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.16) 0%, rgba(79, 70, 229, 0) 72%);
+}
+
+body::after {
+  bottom: -120px;
+  left: -80px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.16) 0%, rgba(15, 118, 110, 0) 72%);
+}
+
+#root {
+  position: relative;
+  isolation: isolate;
 }
 
 ::selection {
-  background: rgba(21, 101, 192, 0.2);
-  color: #0d47a1;
+  background: rgba(79, 70, 229, 0.2);
+  color: #312e81;
 }
 
 a {
@@ -41,10 +76,10 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #90caf9 0%, #5c6bc0 100%);
+  background: linear-gradient(180deg, #c7d2fe 0%, #818cf8 100%);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #64b5f6 0%, #3949ab 100%);
+  background: linear-gradient(180deg, #a5b4fc 0%, #4f46e5 100%);
 }

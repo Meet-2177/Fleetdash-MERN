@@ -1,16 +1,16 @@
 import { createTheme } from "@mui/material/styles";
 
-const primaryBlue = {
-  main: "#1565C0",
-  light: "#42A5F5",
-  dark: "#0D47A1",
+const primaryIndigo = {
+  main: "#4F46E5",
+  light: "#818CF8",
+  dark: "#312E81",
   contrastText: "#ffffff",
 };
 
-const secondaryTeal = {
-  main: "#00838F",
-  light: "#4FB3BF",
-  dark: "#005662",
+const secondaryCyan = {
+  main: "#0F766E",
+  light: "#2DD4BF",
+  dark: "#115E59",
   contrastText: "#ffffff",
 };
 
@@ -18,36 +18,37 @@ export const getTheme = (mode = "light") =>
   createTheme({
     palette: {
       mode,
-      primary: primaryBlue,
-      secondary: secondaryTeal,
+      primary: primaryIndigo,
+      secondary: secondaryCyan,
       background: {
-        default: mode === "light" ? "#F4F7FB" : "#0A1929",
-        paper: mode === "light" ? "#FFFFFF" : "#132F4C",
+        default: mode === "light" ? "#f7f7ff" : "#07111f",
+        paper: mode === "light" ? "#ffffff" : "#112340",
       },
-      success: { main: "#2E7D32" },
-      warning: { main: "#ED6C02" },
-      error: { main: "#D32F2F" },
-      info: { main: "#0288D1" },
-      divider: mode === "light" ? "#E3E8EF" : "#1E3A5F",
+      success: { main: "#16A34A" },
+      warning: { main: "#F59E0B" },
+      error: { main: "#DC2626" },
+      info: { main: "#0EA5E9" },
+      divider: mode === "light" ? "#e5ebf5" : "#22364d",
     },
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h4: { fontWeight: 700 },
       h5: { fontWeight: 700 },
-      h6: { fontWeight: 600 },
+      h6: { fontWeight: 650 },
       subtitle1: { fontWeight: 600 },
       button: { textTransform: "none", fontWeight: 600 },
     },
-    shape: { borderRadius: 12 },
+    shape: { borderRadius: 14 },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
+            borderRadius: 999,
             boxShadow: "none",
             textTransform: "none",
             px: 1.4,
             py: 0.8,
+            fontWeight: 600,
           },
           contained: { boxShadow: "none", "&:hover": { boxShadow: "none" } },
         },
@@ -55,12 +56,12 @@ export const getTheme = (mode = "light") =>
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16,
+            borderRadius: 18,
             boxShadow:
               mode === "light"
-                ? "0 14px 36px rgba(15, 23, 42, 0.06)"
-                : "0 10px 24px rgba(0,0,0,0.25)",
-            border: mode === "light" ? "1px solid #E3E8EF" : "1px solid #1E3A5F",
+                ? "0 16px 38px rgba(15, 23, 42, 0.07)"
+                : "0 12px 28px rgba(0,0,0,0.26)",
+            border: mode === "light" ? "1px solid #E6ECF6" : "1px solid #22364d",
           },
         },
       },
@@ -70,26 +71,24 @@ export const getTheme = (mode = "light") =>
         },
       },
       MuiTextField: {
-        defaultProps: {
-          variant: "outlined",
-        },
+        defaultProps: { variant: "outlined" },
       },
       MuiTableHead: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === "light" ? "#F0F4F8" : "#1A365D",
+            backgroundColor: mode === "light" ? "#f1f5ff" : "#1b365d",
           },
         },
       },
       MuiTableCell: {
         styleOverrides: {
-          head: { fontWeight: 700, color: mode === "light" ? "#37474F" : "#B0BEC5" },
+          head: { fontWeight: 700, color: mode === "light" ? "#334155" : "#B9D0E8" },
         },
       },
       MuiDrawer: {
         styleOverrides: {
           paper: {
-            borderRight: mode === "light" ? "1px solid #E3E8EF" : "1px solid #1E3A5F",
+            borderRight: mode === "light" ? "1px solid #E6ECF6" : "1px solid #22364d",
           },
         },
       },
@@ -97,7 +96,7 @@ export const getTheme = (mode = "light") =>
         styleOverrides: {
           root: {
             boxShadow: "none",
-            borderBottom: mode === "light" ? "1px solid #E3E8EF" : "1px solid #1E3A5F",
+            borderBottom: mode === "light" ? "1px solid #E6ECF6" : "1px solid #22364d",
           },
         },
       },

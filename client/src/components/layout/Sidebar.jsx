@@ -8,6 +8,7 @@ import {
   Typography,
   Box,
   Divider,
+  Chip,
 } from "@mui/material";
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -22,12 +23,14 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { NavLink, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { navItems } from "../../utils/rolePermissions";
+import MapIcon from "@mui/icons-material/Map";
 
 const iconMap = {
   Dashboard: DashboardIcon,
   DirectionsCar: DirectionsCarIcon,
   People: PeopleIcon,
   Route: RouteIcon,
+  Map: MapIcon,
   LocalGasStation: LocalGasStationIcon,
   Build: BuildIcon,
   Assessment: AssessmentIcon,
@@ -39,17 +42,22 @@ const SidebarContent = ({ onNavigate }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  const filteredNav = navItems.filter((item) =>
-    item.roles.includes(user?.role)
-  );
+  const filteredNav = navItems.filter((item) => item.roles.includes(user?.role));
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Toolbar sx={{ px: 2, gap: 1 }}>
-        <DirectionsCarFilledIcon color="primary" />
-        <Typography variant="h6" fontWeight={700} color="primary">
-          FleetDash
-        </Typography>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: "transparent" }}>
+      <Toolbar sx={{ px: 2, py: 2.2, gap: 1.2, background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(15,118,110,0.12) 100%)" }}>
+        <Box sx={{ p: 1, borderRadius: 2, bgcolor: "primary.main", color: "primary.contrastText", display: "flex" }}>
+          <DirectionsCarFilledIcon />
+        </Box>
+        <Box>
+          <Typography variant="subtitle1" fontWeight={700} color="primary.main">
+            FleetDash
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Operations center
+          </Typography>
+        </Box>
       </Toolbar>
       <Divider />
       <List sx={{ px: 1, py: 2, flex: 1 }}>
@@ -63,12 +71,15 @@ const SidebarContent = ({ onNavigate }) => {
               to={item.path}
               onClick={onNavigate}
               sx={{
-                mb: 0.5,
-                borderRadius: 2,
+                mb: 0.6,
+                borderRadius: 2.2,
                 bgcolor: isActive ? "primary.main" : "transparent",
                 color: isActive ? "primary.contrastText" : "text.primary",
+                boxShadow: isActive ? "0 12px 24px rgba(79, 70, 229, 0.18)" : "none",
+                transition: "all 0.2s ease",
                 "&:hover": {
                   bgcolor: isActive ? "primary.dark" : "action.hover",
+                  transform: "translateX(2px)",
                 },
                 "& .MuiListItemIcon-root": {
                   color: isActive ? "primary.contrastText" : "primary.main",
@@ -84,9 +95,17 @@ const SidebarContent = ({ onNavigate }) => {
         })}
       </List>
       <Box sx={{ p: 2 }}>
-        <Typography variant="caption" color="text.secondary">
-          Fleet Management v1.0
-        </Typography>
+        <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
+          <Typography variant="caption" color="text.secondary" display="block" mb={0.6}>
+            Fleet Management
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography variant="subtitle2" fontWeight={700}>
+              Live overview
+            </Typography>
+            <Chip label="v1.0" size="small" color="primary" />
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
@@ -101,7 +120,7 @@ const Sidebar = ({ drawerWidth, mobileOpen, onClose, isMobile }) => (
         onClose={onClose}
         ModalProps={{ keepMounted: true }}
         sx={{
-          "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box" },
+          "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box", border: "none" },
         }}
       >
         <SidebarContent onNavigate={onClose} />
@@ -115,6 +134,9 @@ const Sidebar = ({ drawerWidth, mobileOpen, onClose, isMobile }) => (
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            border: "none",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,255,0.96) 100%)",
+            borderRight: "1px solid rgba(148, 163, 184, 0.22)",
           },
         }}
       >
