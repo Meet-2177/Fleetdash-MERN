@@ -70,6 +70,22 @@ export const getVehicles = asyncHandler(async (req, res) => {
 });
 
 // ==========================
+// Get Vehicles For Live Map
+// ==========================
+export const getVehiclesForMap = asyncHandler(async (req, res) => {
+  const vehicles = await Vehicle.find({
+    latitude: { $ne: null },
+    longitude: { $ne: null },
+  }).sort({ updatedAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    totalVehicles: vehicles.length,
+    vehicles,
+  });
+});
+
+// ==========================
 // Get Vehicle By ID
 // ==========================
 export const getVehicleById = asyncHandler(async (req, res) => {

@@ -7,6 +7,7 @@ import { vehicleSchema } from "../validators/vehicleValidator.js";
 import {
   createVehicle,
   getVehicles,
+  getVehiclesForMap,
   getVehicleById,
   updateVehicle,
   deleteVehicle,
@@ -19,11 +20,11 @@ const router = express.Router();
 // Only Admin & Manager
 // ==========================
 router.post(
-    "/",
-    protect,
-    adminOnly,
-    validate(vehicleSchema),
-    createVehicle
+  "/",
+  protect,
+  adminOnly,
+  validate(vehicleSchema),
+  createVehicle
 );
 
 // ==========================
@@ -40,6 +41,13 @@ router.get(
 // Get Vehicle By ID
 // All Logged-in Users
 // ==========================
+
+router.get(
+  "/map",
+  authMiddleware,
+  getVehiclesForMap
+);
+
 router.get(
   "/:id",
   authMiddleware,
