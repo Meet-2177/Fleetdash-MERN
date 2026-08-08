@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -16,61 +16,37 @@ import {
   Chip,
   Grid,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 
-// Fix Leaflet marker icons with Vite
+import { getVehicles } from "../services/vehicleService";
+
+// --------------------------------------------------
+// FIX LEAFLET MARKER ICONS WITH VITE
+// --------------------------------------------------
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+
   iconUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-
 // --------------------------------------------------
-// DEMO VEHICLES
-// --------------------------------------------------
-
-const vehicles = [
-  {
-    id: 1,
-    vehicleNumber: "GJ01AB1234",
-    driver: "Meet Patel",
-    status: "On Trip",
-
-    // Ahmedabad
-    position: [23.0225, 72.5714],
-
-    location: "Ahmedabad",
-  },
-
-  {
-    id: 2,
-    vehicleNumber: "GJ05CD5678",
-    driver: "Raj Patel",
-    status: "Available",
-
-    // Slightly away from center
-    position: [23.055, 72.610],
-
-    location: "Ahmedabad",
-  },
-];
-
-
-// --------------------------------------------------
-// GEOFENCE CONFIGURATION
+// TEMPORARY GEOFENCE CONFIGURATION
 // --------------------------------------------------
 
+// Ahmedabad center
 const GEO_FENCE_CENTER = [23.0225, 72.5714];
 
 // Radius in meters
 const GEO_FENCE_RADIUS = 5000;
-
 
 // --------------------------------------------------
 // DISTANCE CALCULATION
@@ -82,15 +58,11 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const lat1Rad = (lat1 * Math.PI) / 180;
   const lat2Rad = (lat2 * Math.PI) / 180;
 
-  const deltaLat =
-    ((lat2 - lat1) * Math.PI) / 180;
-
-  const deltaLon =
-    ((lon2 - lon1) * Math.PI) / 180;
+  const deltaLat = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLon = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
-    Math.sin(deltaLat / 2) *
-      Math.sin(deltaLat / 2) +
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
     Math.cos(lat1Rad) *
       Math.cos(lat2Rad) *
       Math.sin(deltaLon / 2) *
@@ -101,7 +73,6 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
   return R * c;
 };
-
 
 // --------------------------------------------------
 // CHECK GEOFENCE
@@ -118,46 +89,118 @@ const isInsideGeofence = (position) => {
   return distance <= GEO_FENCE_RADIUS;
 };
 
-
 // --------------------------------------------------
 // COMPONENT
 // --------------------------------------------------
 
 const LiveMap = () => {
+  const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // ------------------------------------------------
+  // SCROLL TO TOP
+  // ------------------------------------------------
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // ------------------------------------------------
+  // LOAD VEHICLES FROM API
+  // ------------------------------------------------
 
-  const vehicleStatus = vehicles.map((vehicle) => {
-    const inside = isInsideGeofence(vehicle.position);
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    return {
-      ...vehicle,
-      inside,
+        const response = await getVehicles({
+          limit: 100,
+        });
+
+        const data = response.data;
+
+        const vehicleList = Array.isArray(data)
+          ? data
+          : data?.vehicles || [];
+
+        setVehicles(vehicleList);
+      } catch (err) {
+        console.error(
+          "Failed to load vehicles:",
+          err
+        );
+
+        setError(
+          "Unable to load vehicle locations."
+        );
+      } finally {
+        setLoading(false);
+      }
     };
-  });
 
+    loadVehicles();
+  }, []);
+
+  // ------------------------------------------------
+  // PREPARE VEHICLE LOCATIONS
+  // ------------------------------------------------
+
+  const vehicleStatus = vehicles
+    .filter(
+      (vehicle) =>
+        vehicle.latitude !== null &&
+        vehicle.latitude !== undefined &&
+        vehicle.longitude !== null &&
+        vehicle.longitude !== undefined
+    )
+    .map((vehicle) => {
+      const position = [
+        Number(vehicle.latitude),
+        Number(vehicle.longitude),
+      ];
+
+      const inside = isInsideGeofence(position);
+
+      return {
+        ...vehicle,
+        position,
+        inside,
+      };
+    });
+
+  // ------------------------------------------------
+  // COUNTS
+  // ------------------------------------------------
 
   const insideCount = vehicleStatus.filter(
     (vehicle) => vehicle.inside
   ).length;
 
-
   const outsideCount = vehicleStatus.filter(
     (vehicle) => !vehicle.inside
   ).length;
 
+  // ------------------------------------------------
+  // TOTAL VEHICLES WITH GPS
+  // ------------------------------------------------
+
+  const trackedVehicleCount =
+    vehicleStatus.length;
+
+  // ------------------------------------------------
+  // RENDER
+  // ------------------------------------------------
 
   return (
     <Box>
-
       {/* ---------------------------------------- */}
       {/* PAGE HEADER */}
       {/* ---------------------------------------- */}
 
       <Box sx={{ mb: 3 }}>
-
         <Typography
           variant="h4"
           fontWeight={700}
@@ -166,17 +209,14 @@ const LiveMap = () => {
           Live Map
         </Typography>
 
-        <Typography
-          color="text.secondary"
-        >
-          Monitor vehicle locations and geofence activity in real time.
+        <Typography color="text.secondary">
+          Monitor vehicle locations and geofence
+          activity in real time.
         </Typography>
-
       </Box>
 
-
       {/* ---------------------------------------- */}
-      {/* GEOFENCE STATUS CARDS */}
+      {/* STATUS CARDS */}
       {/* ---------------------------------------- */}
 
       <Grid
@@ -184,13 +224,13 @@ const LiveMap = () => {
         spacing={2}
         sx={{ mb: 3 }}
       >
+        {/* -------------------------------------- */}
+        {/* ACTIVE GEOFENCE */}
+        {/* -------------------------------------- */}
 
-        {/* Geofence */}
-        <Grid item xs={12} md={4}>
-
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
-
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -220,19 +260,50 @@ const LiveMap = () => {
               >
                 Radius: 5 km
               </Typography>
-
             </CardContent>
           </Card>
-
         </Grid>
 
+        {/* -------------------------------------- */}
+        {/* TRACKED VEHICLES */}
+        {/* -------------------------------------- */}
 
-        {/* Inside */}
-        <Grid item xs={12} md={4}>
-
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+              >
+                Tracked Vehicles
+              </Typography>
 
+              <Typography
+                variant="h4"
+                fontWeight={700}
+                color="primary.main"
+                sx={{ mt: 1 }}
+              >
+                {trackedVehicleCount}
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+              >
+                Vehicles with GPS coordinates
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* -------------------------------------- */}
+        {/* INSIDE */}
+        {/* -------------------------------------- */}
+
+        <Grid item xs={12} md={3}>
+          <Card>
+            <CardContent>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -253,21 +324,19 @@ const LiveMap = () => {
                 variant="body2"
                 color="text.secondary"
               >
-                Vehicles currently within permitted area
+                Within permitted area
               </Typography>
-
             </CardContent>
           </Card>
-
         </Grid>
 
+        {/* -------------------------------------- */}
+        {/* OUTSIDE */}
+        {/* -------------------------------------- */}
 
-        {/* Outside */}
-        <Grid item xs={12} md={4}>
-
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
-
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -292,16 +361,75 @@ const LiveMap = () => {
                 variant="body2"
                 color="text.secondary"
               >
-                Vehicles outside permitted area
+                Outside permitted area
               </Typography>
-
             </CardContent>
           </Card>
-
         </Grid>
-
       </Grid>
 
+      {/* ---------------------------------------- */}
+      {/* LOADING */}
+      {/* ---------------------------------------- */}
+
+      {loading && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          <CircularProgress size={22} />
+
+          <Typography color="text.secondary">
+            Loading vehicle locations...
+          </Typography>
+        </Box>
+      )}
+
+      {/* ---------------------------------------- */}
+      {/* ERROR */}
+      {/* ---------------------------------------- */}
+
+      {error && (
+        <Typography
+          color="error"
+          sx={{ mb: 2 }}
+        >
+          {error}
+        </Typography>
+      )}
+
+      {/* ---------------------------------------- */}
+      {/* NO GPS VEHICLES */}
+      {/* ---------------------------------------- */}
+
+      {!loading &&
+        !error &&
+        vehicleStatus.length === 0 && (
+          <Card sx={{ mb: 2 }}>
+            <CardContent>
+              <Typography
+                color="text.secondary"
+              >
+                No vehicles with GPS coordinates
+                are available.
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 1 }}
+              >
+                Add latitude and longitude to a
+                vehicle from the Vehicles page to
+                display it on the map.
+              </Typography>
+            </CardContent>
+          </Card>
+        )}
 
       {/* ---------------------------------------- */}
       {/* MAP */}
@@ -317,7 +445,6 @@ const LiveMap = () => {
           borderColor: "divider",
         }}
       >
-
         <MapContainer
           center={GEO_FENCE_CENTER}
           zoom={12}
@@ -326,13 +453,14 @@ const LiveMap = () => {
             width: "100%",
           }}
         >
+          {/* ---------------------------------- */}
+          {/* OPEN STREET MAP */}
+          {/* ---------------------------------- */}
 
-          {/* OpenStreetMap */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-
 
           {/* ---------------------------------- */}
           {/* GEOFENCE */}
@@ -349,19 +477,17 @@ const LiveMap = () => {
             }}
           />
 
-
           {/* ---------------------------------- */}
-          {/* VEHICLES */}
+          {/* VEHICLE MARKERS */}
           {/* ---------------------------------- */}
 
           {vehicleStatus.map((vehicle) => (
-
             <Marker
-              key={vehicle.id}
+              key={vehicle._id}
               position={vehicle.position}
             >
-
               <Popup>
+                {/* Vehicle Number */}
 
                 <Typography
                   variant="subtitle1"
@@ -370,20 +496,46 @@ const LiveMap = () => {
                   {vehicle.vehicleNumber}
                 </Typography>
 
+                {/* Vehicle Type */}
+
                 <Typography variant="body2">
-                  Driver: {vehicle.driver}
+                  Type: {vehicle.vehicleType}
                 </Typography>
+
+                {/* Brand */}
+
+                <Typography variant="body2">
+                  Brand: {vehicle.brand}
+                </Typography>
+
+                {/* Model */}
+
+                <Typography variant="body2">
+                  Model: {vehicle.model}
+                </Typography>
+
+                {/* Status */}
 
                 <Typography variant="body2">
                   Status: {vehicle.status}
                 </Typography>
 
+                {/* Coordinates */}
+
                 <Typography variant="body2">
-                  Location: {vehicle.location}
+                  Location:{" "}
+                  {Number(vehicle.latitude).toFixed(
+                    5
+                  )}
+                  ,{" "}
+                  {Number(vehicle.longitude).toFixed(
+                    5
+                  )}
                 </Typography>
 
-                <Box sx={{ mt: 1 }}>
+                {/* Geofence Status */}
 
+                <Box sx={{ mt: 1 }}>
                   <Chip
                     size="small"
                     label={
@@ -397,19 +549,12 @@ const LiveMap = () => {
                         : "error"
                     }
                   />
-
                 </Box>
-
               </Popup>
-
             </Marker>
-
           ))}
-
         </MapContainer>
-
       </Box>
-
     </Box>
   );
 };

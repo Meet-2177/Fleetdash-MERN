@@ -24,18 +24,22 @@ import { NavLink, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { navItems } from "../../utils/rolePermissions";
 import MapIcon from "@mui/icons-material/Map";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const iconMap = {
   Dashboard: DashboardIcon,
   DirectionsCar: DirectionsCarIcon,
   People: PeopleIcon,
   Route: RouteIcon,
-  Map: MapIcon,
   LocalGasStation: LocalGasStationIcon,
   Build: BuildIcon,
   Assessment: AssessmentIcon,
   Notifications: NotificationsIcon,
   ManageAccounts: ManageAccountsIcon,
+
+  // New
+  Map: MapIcon,
+  LocationOn: LocationOnIcon,
 };
 
 const SidebarContent = ({ onNavigate }) => {

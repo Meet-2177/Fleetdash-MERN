@@ -24,6 +24,7 @@ import helmet from "helmet";
 
 import apiLimiter from "./middleware/rateLimiter.js";
 import morgan from "morgan";
+import geofenceRoutes from "./routes/geofenceRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -52,6 +53,7 @@ const startServer = async () => {
   app.use("/api/reports", reportRoutes);
   app.use("/api/notifications", notificationRoutes);
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use("/api/geofences", geofenceRoutes);
 
   // Test Route
   app.get("/", (req, res) => {

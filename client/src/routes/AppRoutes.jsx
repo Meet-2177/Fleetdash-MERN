@@ -20,6 +20,7 @@ import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import LiveMap from "../pages/LiveMap";
+import Geofences from "../pages/Geofences";
 
 const AppRoutes = () => (
   <Routes>
@@ -42,6 +43,10 @@ const AppRoutes = () => (
         <Route path="/live-map" element={<LiveMap />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route
+          path="/geofences"
+          element={<Geofences />}
+        />
 
         <Route element={<RoleRoute allowedRoles={[ROLES.ADMIN]} />}>
           <Route path="/users" element={<Users />} />

@@ -43,6 +43,19 @@ const vehicleSchema = new mongoose.Schema(
       enum: ["Available", "On Trip", "Maintenance"],
       default: "Available",
     },
+    latitude: {
+      type: Number,
+      default: null,
+      min: -90,
+      max: 90,
+    },
+
+    longitude: {
+      type: Number,
+      default: null,
+      min: -180,
+      max: 180,
+    },
   },
   {
     timestamps: true,

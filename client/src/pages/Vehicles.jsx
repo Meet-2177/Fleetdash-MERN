@@ -51,6 +51,8 @@ const emptyForm = {
   capacity: "",
   fuelType: "Diesel",
   status: "Available",
+  latitude: "",
+  longitude: "",
 };
 
 const Vehicles = () => {
@@ -99,6 +101,7 @@ const Vehicles = () => {
 
   const openEdit = (vehicle) => {
     setSelected(vehicle);
+
     setForm({
       vehicleNumber: vehicle.vehicleNumber,
       vehicleType: vehicle.vehicleType,
@@ -107,14 +110,28 @@ const Vehicles = () => {
       capacity: vehicle.capacity,
       fuelType: vehicle.fuelType,
       status: vehicle.status,
+      latitude: vehicle.latitude ?? "",
+      longitude: vehicle.longitude ?? "",
     });
+
     setDialogOpen(true);
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const payload = { ...form, capacity: Number(form.capacity) };
+      const payload = {
+        ...form,
+        capacity: Number(form.capacity),
+        latitude:
+          form.latitude === ""
+            ? null
+            : Number(form.latitude),
+        longitude:
+          form.longitude === ""
+            ? null
+            : Number(form.longitude),
+      };
       if (selected) {
         await updateVehicle(selected._id, payload);
         toast.success("Vehicle updated");
@@ -253,6 +270,16 @@ const Vehicles = () => {
               { name: "brand", label: "Brand" },
               { name: "model", label: "Model" },
               { name: "capacity", label: "Capacity", type: "number" },
+              {
+                name: "latitude",
+                label: "Latitude",
+                type: "number",
+              },
+              {
+                name: "longitude",
+                label: "Longitude",
+                type: "number",
+              },
             ].map((field) => (
               <Grid item xs={12} sm={6} key={field.name}>
                 <TextField
@@ -261,8 +288,22 @@ const Vehicles = () => {
                   name={field.name}
                   type={field.type || "text"}
                   value={form[field.name]}
-                  onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
-                  required
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      [field.name]: e.target.value,
+                    })
+                  }
+                  inputProps={
+                    field.name === "latitude"
+                      ? { min: -90, max: 90, step: "any" }
+                      : field.name === "longitude"
+                        ? { min: -180, max: 180, step: "any" }
+                        : undefined
+                  }
+                  required={
+                    !["latitude", "longitude"].includes(field.name)
+                  }
                 />
               </Grid>
             ))}
