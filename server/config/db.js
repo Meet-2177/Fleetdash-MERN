@@ -16,11 +16,8 @@ const connectDB = async () => {
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     return true;
   } catch (error) {
-    console.error("⚠️ MongoDB Connection Failed:", error.message);
-    console.warn(
-      "⚠️ Continuing without MongoDB for now. Authentication will use a development fallback until a connection is established."
-    );
-    return false;
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    throw error;
   }
 };
 
